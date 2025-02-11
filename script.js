@@ -10,7 +10,8 @@ const player1 = {
     height: 50, // Defines the height of Player 1's character
     speed: 5, // Sets how fast Player 1 moves
     health: 100, // Sets the initial health points for Player 1
-    direction: 'right' // Sets the initial direction Player 1 is facing
+    direction: 'right', // Sets the initial direction Player 1 is facing
+    special: 0 //Sets the initial special charge for Player 1
 };
 
 const player2 = {
@@ -20,7 +21,8 @@ const player2 = {
     height: 50, // Defines the height of Player 2's character
     speed: 5, // Sets how fast Player 2 moves
     health: 100, // Sets the initial health points for Player 2
-    direction: 'left' // Sets the initial direction Player 2 is facing (opposite of Player 1)
+    direction: 'left', // Sets the initial direction Player 1 is facing (opposite too Player 2)
+    special: 0 //Sets the initial special charge for Player 2
 };
 
 // Draw characters
@@ -84,13 +86,32 @@ function attack(attacker, defender) {
     }
 }
 
+// Special function (I just copy-pasted the attack func. Should I just implement it to the attack func? - KyuByt)
+function special(attacker, defender) {
+    // Checks if the attacker is close enough to the defender to land a hit 
+    if (Math.abs(attacker.x - defender.x) < 60 && Math.abs(attacker.y - defender.y) < 60) {
+        defender.special += 10; // Charges defender's special by 10 points if hit
+        attacker.special += 2; // Charges attacker's special by 2 points if attack connects
+    }
+}
+
+//Crude Colission Detection (Try 3) (Still have to limit movement to canvas too - KyuByt)
+function isColliding() {
+    //Checks if a player is inside the other, if true send it to console (I don't know how to stop player movement but i have a crude idea - KyuByt)
+    if (Math.abs(player1.x - player2.x) < 50 && Math.abs(player1.y - player2.y) < 50) {
+        console.log("true"); 
+    }
+}
+
 // Handle attacks
 document.addEventListener('keydown', (event) => { // Listens for keyboard input for attacks
     if (event.key === ' ') { // If Spacebar is pressed
         attack(player1, player2); // Player 1 attacks Player 2
+        special(player1, player2); // (I can't code for my life but i can halfway read it - KyuByt)
     }
     if (event.key === 'Enter') { // If Enter key is pressed
         attack(player2, player1); // Player 2 attacks Player 1
+        special(player2, player1); // (or stress test the game- KyuByt)
     }
 });
 
@@ -105,11 +126,20 @@ function update() {
     
     document.getElementById('player2-health').style.width = `${player2.health}%`; // Updates Player 2's health bar width
     document.getElementById('player2-health').textContent = `${player2.health}%`; // Updates Player 2's health bar text
+
+    // Update special bars (Copy-Paste you already know it - KyuByt)
+    document.getElementById('player1-special').style.width = `${player1.special}%`; // Updates Player 1's special bar width
+    document.getElementById('player1-special').textContent = `${player1.special}%`; // Updates Player 1's special bar text
+    
+    document.getElementById('player2-special').style.width = `${player2.special}%`; // Updates Player 2's special bar width
+    document.getElementById('player2-special').textContent = `${player2.special}%`; // Updates Player 2's special bar text
+
 }
 
 // Game loop
 function gameLoop() {
     update(); // Calls the update function to refresh the game state
+    isColliding();
     requestAnimationFrame(gameLoop); // Continuously loops the game by calling itself
 }
 
