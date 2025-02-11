@@ -39,6 +39,30 @@ body {
     color: white;
 }
 
+.special-bars {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.special-bar {
+    width: 200px;
+    height: 30px;
+    background-color: #ffccff; /* Idk i copy pasted yours */
+    border: 3px solid #ff66b3; /* Idk i copy pasted yours */
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.special {
+    height: 100%;
+    background-color: #ffff99; /* yellow for special */
+    text-align: center; /*I know why now. Center is at the border since value is 0% at start*/
+    line-height: 30px;
+    color: white;
+}
+
+
 #gameCanvas {
     background-color: #f0e6ff; /* Pastel lavender */
 }
