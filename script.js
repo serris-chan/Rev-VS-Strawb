@@ -97,9 +97,19 @@ function special(attacker, defender) {
 
 //Crude Colission Detection (Try 3) (Still have to limit movement to canvas too - KyuByt)
 function isColliding() {
-    //Checks if a player is inside the other, if true send it to console (I don't know how to stop player movement but i have a crude idea - KyuByt)
+    //Checks if a player is inside the other (Still have to make it the same for both players)
     if (Math.abs(player1.x - player2.x) < 50 && Math.abs(player1.y - player2.y) < 50) {
-        console.log("true"); 
+        //If the difference between the xpos of both players is negative (P1 is colliding w/ P2 from the left)
+        if(player1.x - player2.x <= 0) { 
+            player1.x = player2.x - player1.width - 1; //Make P1.x equal P2.x minus P1.width minus 1 to prevent staying inside
+            console.log('colision Right');  //Log in console a right-side collision from P1
+        }
+        //If the difference between the xpos of both players is positive (P1 is colliding w/ P2 from the right)
+        if(player1.x - player2.x >= 0) {
+            player1.x = player2.x + player1.width + 1; //Make P1.x equal P2.x plus P1.width plus 1 to prevent staying inside
+            console.log('colision Left'); //Log in console a left-side collision from P1
+        }
+        //If the difference between the ypos of both players is negative (P1 is colliding w/ P2 from the bottom)
     }
 }
 
