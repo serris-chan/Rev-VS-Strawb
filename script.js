@@ -2,6 +2,13 @@
 const canvas = document.getElementById('gameCanvas'); // Selects the HTML canvas element by its ID
 const ctx = canvas.getContext('2d'); // Gets the 2D drawing context to draw on the canvas
 
+//World logic
+const world = {
+    gravity: 2, // Sets the global acceleration for greavity (unused for now)
+    acceleration: 1, // Sets global acceleration for all objects (unused for now)
+
+}
+
 // Player objects
 const player1 = {
     x: 100, // Sets the initial x-coordinate (horizontal position) of Player 1
@@ -42,17 +49,21 @@ document.addEventListener('keydown', (event) => { // Listens for keyboard input 
     switch (event.key) { // Checks which key was pressed
         case 'w': // If 'W' is pressed
             player1.y -= player1.speed; // Moves Player 1 up by subtracting speed from y-coordinate
+            isColliding(player1, player2); //Handles collision in between players
             break; // Exits the switch statement
         case 's': // If 'S' is pressed
             player1.y += player1.speed; // Moves Player 1 down by adding speed to y-coordinate
+            isColliding(player1, player2); //Handles collision in between players
             break; // Exits the switch statement
         case 'a': // If 'A' is pressed
             player1.x -= player1.speed; // Moves Player 1 left by subtracting speed from x-coordinate
             player1.direction = 'left'; // Updates Player 1's direction to 'left'
+            isColliding(player1, player2); //Handles collision in between players
             break; // Exits the switch statement
         case 'd': // If 'D' is pressed
             player1.x += player1.speed; // Moves Player 1 right by adding speed to x-coordinate
             player1.direction = 'right'; // Updates Player 1's direction to 'right'
+            isColliding(player1, player2); //Handles collision in between players
             break; // Exits the switch statement
     }
 
@@ -60,17 +71,21 @@ document.addEventListener('keydown', (event) => { // Listens for keyboard input 
     switch (event.key) { // Checks which key was pressed for Player 2
         case 'ArrowUp': // If 'Arrow Up' is pressed
             player2.y -= player2.speed; // Moves Player 2 up
+            isColliding(player2, player1); //Handles collision in between players
             break; // Exits the switch statement
         case 'ArrowDown': // If 'Arrow Down' is pressed
             player2.y += player2.speed; // Moves Player 2 down
+            isColliding(player2, player1); //Handles collision in between players
             break; // Exits the switch statement
         case 'ArrowLeft': // If 'Arrow Left' is pressed
             player2.x -= player2.speed; // Moves Player 2 left
             player2.direction = 'left'; // Updates Player 2's direction
+            isColliding(player2, player1); //Handles collision in between players
             break; // Exits the switch statement
         case 'ArrowRight': // If 'Arrow Right' is pressed
             player2.x += player2.speed; // Moves Player 2 right
             player2.direction = 'right'; // Updates Player 2's direction
+            isColliding(player2, player1); //Handles collision in between players
             break; // Exits the switch statement
     }
 });
@@ -95,21 +110,42 @@ function special(attacker, defender) {
     }
 }
 
-//Crude Colission Detection (Try 3) (Still have to limit movement to canvas too - KyuByt)
-function isColliding() {
-    //Checks if a player is inside the other (Still have to make it the same for both players)
-    if (Math.abs(player1.x - player2.x) < 50 && Math.abs(player1.y - player2.y) < 50) {
+//Handle World Collission
+function worldCollision() {
+    //Checks if player position is inside the boundaries of the canvas
+    if(player1.x < 0 || player1.x > 800 - player1.width && player1.y < 0 || player1.y > 400 - player1.height) {
+        // Checks for the specific colision and reverts the player into a pos inside the canvas
+        if(player1.x < 0) {
+            player1.x = 0 
+        }
+        if (player1.x > 800 - player1.width) {
+            player1.x = 800 - player1.width 
+        }
+        if(player1.y < 0) {
+            player1.y = 0
+        }
+    }
+    console.log(canvas.height);
+    console.log('P1x: ' + player1.x);
+    console.log('P2x: ' + player2.x);
+    console.log('P1y: ' + player1.y);
+    console.log('P2y: ' + player2.y);
+}
+
+//Handle Player Colission (Try 3)
+function isColliding(attacker, defender) {
+    //Checks if a player is inside the other 
+    if (Math.abs(attacker.x - defender.x) < 50 && Math.abs(attacker.y - defender.y) < 50) {
         //If the difference between the xpos of both players is negative (P1 is colliding w/ P2 from the left)
-        if(player1.x - player2.x <= 0) { 
-            player1.x = player2.x - player1.width - 1; //Make P1.x equal P2.x minus P1.width minus 1 to prevent staying inside
-            console.log('colision Right');  //Log in console a right-side collision from P1
+        if(attacker.x - defender.x <= 0) { 
+            attacker.x = defender.x - attacker.width - 1; //Make P1.x equal P2.x minus P1.width minus 1 to prevent staying inside
+            console.log('colision Right');  //Log in console a right-side collision from P1 (Leave for debuging)
         }
         //If the difference between the xpos of both players is positive (P1 is colliding w/ P2 from the right)
-        if(player1.x - player2.x >= 0) {
-            player1.x = player2.x + player1.width + 1; //Make P1.x equal P2.x plus P1.width plus 1 to prevent staying inside
-            console.log('colision Left'); //Log in console a left-side collision from P1
+        if(attacker.x - defender.x >= 0) {
+            attacker.x = defender.x + attacker.width + 1; //Make P1.x equal P2.x plus P1.width plus 1 to prevent staying inside
+            console.log('colision Left'); //Log in console a left-side collision from P1 (Leave for debuging)
         }
-        //If the difference between the ypos of both players is negative (P1 is colliding w/ P2 from the bottom)
     }
 }
 
@@ -149,7 +185,7 @@ function update() {
 // Game loop
 function gameLoop() {
     update(); // Calls the update function to refresh the game state
-    isColliding();
+    worldCollision();
     requestAnimationFrame(gameLoop); // Continuously loops the game by calling itself
 }
 
