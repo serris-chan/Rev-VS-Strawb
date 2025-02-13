@@ -50,20 +50,24 @@ document.addEventListener('keydown', (event) => { // Listens for keyboard input 
         case 'w': // If 'W' is pressed
             player1.y -= player1.speed; // Moves Player 1 up by subtracting speed from y-coordinate
             isColliding(player1, player2); //Handles collision in between players
+            worldCollision(player1); //Handles boundary collision
             break; // Exits the switch statement
         case 's': // If 'S' is pressed
             player1.y += player1.speed; // Moves Player 1 down by adding speed to y-coordinate
             isColliding(player1, player2); //Handles collision in between players
+            worldCollision(player1); //Handles boundary collision
             break; // Exits the switch statement
         case 'a': // If 'A' is pressed
             player1.x -= player1.speed; // Moves Player 1 left by subtracting speed from x-coordinate
             player1.direction = 'left'; // Updates Player 1's direction to 'left'
             isColliding(player1, player2); //Handles collision in between players
+            worldCollision(player1); //Handles boundary collision
             break; // Exits the switch statement
         case 'd': // If 'D' is pressed
             player1.x += player1.speed; // Moves Player 1 right by adding speed to x-coordinate
             player1.direction = 'right'; // Updates Player 1's direction to 'right'
             isColliding(player1, player2); //Handles collision in between players
+            worldCollision(player1); //Handles boundary collision
             break; // Exits the switch statement
     }
 
@@ -72,20 +76,24 @@ document.addEventListener('keydown', (event) => { // Listens for keyboard input 
         case 'ArrowUp': // If 'Arrow Up' is pressed
             player2.y -= player2.speed; // Moves Player 2 up
             isColliding(player2, player1); //Handles collision in between players
+            worldCollision(player2); //Handles boundary collision
             break; // Exits the switch statement
         case 'ArrowDown': // If 'Arrow Down' is pressed
             player2.y += player2.speed; // Moves Player 2 down
             isColliding(player2, player1); //Handles collision in between players
+            worldCollision(player2); //Handles boundary collision
             break; // Exits the switch statement
         case 'ArrowLeft': // If 'Arrow Left' is pressed
             player2.x -= player2.speed; // Moves Player 2 left
             player2.direction = 'left'; // Updates Player 2's direction
             isColliding(player2, player1); //Handles collision in between players
+            worldCollision(player2); //Handles boundary collision
             break; // Exits the switch statement
         case 'ArrowRight': // If 'Arrow Right' is pressed
             player2.x += player2.speed; // Moves Player 2 right
             player2.direction = 'right'; // Updates Player 2's direction
             isColliding(player2, player1); //Handles collision in between players
+            worldCollision(player2); //Handles boundary collision
             break; // Exits the switch statement
     }
 });
@@ -101,7 +109,7 @@ function attack(attacker, defender) {
     }
 }
 
-// Special function (I just copy-pasted the attack func. Should I just implement it to the attack func? - KyuByt)
+// Special function 
 function special(attacker, defender) {
     // Checks if the attacker is close enough to the defender to land a hit 
     if (Math.abs(attacker.x - defender.x) < 60 && Math.abs(attacker.y - defender.y) < 60) {
@@ -110,26 +118,33 @@ function special(attacker, defender) {
     }
 }
 
-//Handle World Collission
-function worldCollision() {
+//Handle World Collission (activated on player movement for no blinking)
+function worldCollision(player) {
     //Checks if player position is inside the boundaries of the canvas
-    if(player1.x < 0 || player1.x > 800 - player1.width && player1.y < 0 || player1.y > 400 - player1.height) {
+    if((player.x < 0 || player.x > canvas.width - player.width) || (player.y < 0 || player.y > canvas.height - player.height)) {
         // Checks for the specific colision and reverts the player into a pos inside the canvas
-        if(player1.x < 0) {
-            player1.x = 0 
+        if(player.x < 0) {
+            player.x = 0 // Collision with left boundary
+            console.log('P1x: ' + player1.x);
+            console.log('P2x: ' + player2.x);
         }
-        if (player1.x > 800 - player1.width) {
-            player1.x = 800 - player1.width 
+        if (player.x > canvas.width - player.width) {
+            player.x = canvas.width - player.width // Collision with right boundary
+            console.log('P1x: ' + player1.x);
+            console.log('P2x: ' + player2.x);
         }
-        if(player1.y < 0) {
-            player1.y = 0
+        if(player.y < 0) {
+            player.y = 0 // Collision with top boundary
+            console.log('P1y: ' + player1.y);
+            console.log('P2y: ' + player2.y);
+        }
+        if(player.y > canvas.height - player.height){
+            player.y = canvas.height - player.height //Collision with bottom boundary
+            console.log('P1y: ' + player1.y);
+            console.log('P2y: ' + player2.y);
         }
     }
-    console.log(canvas.height);
-    console.log('P1x: ' + player1.x);
-    console.log('P2x: ' + player2.x);
-    console.log('P1y: ' + player1.y);
-    console.log('P2y: ' + player2.y);
+    // (I might need to rework bottom collision since floors wouldn't be activated until player input, but I'll work on acceleration first - KyuByt)
 }
 
 //Handle Player Colission (Try 3)
@@ -185,7 +200,6 @@ function update() {
 // Game loop
 function gameLoop() {
     update(); // Calls the update function to refresh the game state
-    worldCollision();
     requestAnimationFrame(gameLoop); // Continuously loops the game by calling itself
 }
 
